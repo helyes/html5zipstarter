@@ -5,3 +5,5 @@ var exampleFunction = function () {
 };
 
 exampleFunction();
+
+$('#credits').addClass('animated bounceInDown');
