@@ -61,13 +61,13 @@ gulp.task('html', ['styles', 'scripts'], () => {
     .pipe($.if('*.js', $.rev()))
     .pipe($.revReplace())
     .pipe(gulp.dest('dist'))
-
-    .pipe($.size({title: 'Processed'}));
+    .pipe($.size({title: 'Processed html,'}));
     ;
 });
 
 gulp.task('images', () => {
-  return gulp.src('app/images/**/*')
+  return gulp.src('app/images/**/*', {base: 'app'})
+    .pipe($.print())
     .pipe($.cache($.imagemin({
       progressive: true,
       interlaced: true,
@@ -75,8 +75,35 @@ gulp.task('images', () => {
       // as hooks for embedding and styling
       svgoPlugins: [{cleanupIDs: false}]
     })))
-    .pipe(gulp.dest('dist/images'));
+    .pipe($.rev())
+    .pipe($.print())
+    .pipe(gulp.dest('dist'))
+    .pipe($.print())
+    .pipe($.rev.manifest())
+    .pipe(gulp.dest('dist/images'))
+    .pipe($.print())
+    .pipe($.size({title: 'Processed'}));
+    ;
 });
+
+gulp.task('revimages', ['html', 'images'], function () {
+
+//  var extendedManifest = extendManifest('./dist/images/rev-manifest.json');
+  var manifest = require('./dist/images/rev-manifest.json');
+
+  var options = {
+     //base: 'images',
+    //prefix: 'images',
+    verbose: false
+  };
+
+  return gulp.src(['dist/*.html', 'dist/styles/*.css'])
+      //.pipe($.print())
+      .pipe($.fingerprint(manifest, options))
+      .pipe($.if('*.css',  gulp.dest('dist/styles')))
+      .pipe($.if('*.html', gulp.dest('dist')))
+});
+
 
 gulp.task('fonts', () => {
   return gulp.src(require('main-bower-files')('**/*.{eot,svg,ttf,woff,woff2}', function (err) {})
@@ -158,7 +185,7 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app'));
 });
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
+gulp.task('build', ['lint', 'html', 'revimages', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
