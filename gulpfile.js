@@ -1,9 +1,9 @@
-// generated on 2016-09-10 using generator-webapp 2.1.0
 const gulp = require('gulp');
 const gulpLoadPlugins = require('gulp-load-plugins');
 const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
+var fs = require('fs');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -65,6 +65,32 @@ gulp.task('html', ['styles', 'scripts'], () => {
     ;
 });
 
+
+/**
+ * Extends rev-d manifest file by adding ../ front of all keys and values
+ * Required for css image revs as css files sit in a subfolder and image url is ../images/image.png
+ * as opposed to html's image/image.png.
+ * cat ./dist/images/rev-manifest-extended.json
+ *
+ */
+var extendManifest = function (manifest) {
+  var manifestRev = require(manifest);
+  var manifestExtended = {};
+
+  for (var key in manifestRev) {
+    if (manifestRev.hasOwnProperty(key)) {
+      manifestExtended[key] = manifestRev[key];
+      manifestExtended['../' + key] = '../' + manifestRev[key];
+    }
+  }
+  //contains both images/image.png and ../images/images.png for search and replace
+  var extendedManifestFile = './dist/images/rev-manifest-extended.json';
+  fs.writeFileSync(extendedManifestFile, JSON.stringify(manifestExtended, undefined, 2));
+  console.log('File ' + extendedManifestFile + ' has been successfully created');
+  return extendedManifestFile;
+}
+
+
 gulp.task('images', () => {
   return gulp.src('app/images/**/*', {base: 'app'})
     .pipe($.print())
@@ -88,8 +114,8 @@ gulp.task('images', () => {
 
 gulp.task('revimages', ['html', 'images'], function () {
 
-//  var extendedManifest = extendManifest('./dist/images/rev-manifest.json');
-  var manifest = require('./dist/images/rev-manifest.json');
+  var extendedManifest = extendManifest('./dist/images/rev-manifest.json');
+  var manifest = require(extendedManifest);
 
   var options = {
      //base: 'images',

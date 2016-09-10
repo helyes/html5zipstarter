@@ -11,16 +11,17 @@ body {
   padding: 0.2em 0;
 }
 
-.hero-unit {
+/*.hero-unit {
   margin: 50px auto 0 auto;
   width: 80%;
   font-size: 22px;
   font-weight: 200;
   line-height: 30px;
   background-color: #eee;
+  background-color: red;
   border-radius: 6px;
   padding: 60px;
-}
+}*/
 
 .hero-unit h1 {
   font-size: 60px;
