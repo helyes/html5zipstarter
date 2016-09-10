@@ -1,0 +1,40 @@
+# --------------------------------
+# Minimal web project .gitignore
+# --------------------------------
+
+
+# because we use macs - ignore OS generated files
+Thumbs.db
+.DS_Store
+
+
+# ignore all files starting with . or ~
+.*
+~*
+
+
+# ignore dependency directories
+/node_modules/
+/bower_components/
+
+
+# ignore generated files
+/dist/
+
+
+# ignore editor files
+*.sublime-project
+*.sublime-workspace
+
+
+# ignore log files
+*.log
+
+
+# -------------------------
+# Start whitelisting below
+# -------------------------
+
+# track these files, if they exist
+!.gitignore
+!.editorconfig
