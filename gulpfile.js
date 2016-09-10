@@ -57,7 +57,13 @@ gulp.task('html', ['styles', 'scripts'], () => {
     .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
-    .pipe(gulp.dest('dist'));
+    .pipe($.if('*.css', $.rev()))
+    .pipe($.if('*.js', $.rev()))
+    .pipe($.revReplace())
+    .pipe(gulp.dest('dist'))
+
+    .pipe($.size({title: 'Processed'}));
+    ;
 });
 
 gulp.task('images', () => {
