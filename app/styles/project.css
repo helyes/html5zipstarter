@@ -1,19 +1,17 @@
 
-
 #container {
-    display: flex;              /* establish flex container */
-    flex-direction: column;     /* stack flex items vertically */
-    justify-content: center;    /* center items vertically, in this case */
-    align-items: center;        /* center items horizontally, in this case */
-    /*height: 200px;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.box {
+.image-box {
     width: 80%;
     margin: 5px;
     text-align: center;
 }
 
-.box img {
+.image-box img {
    width: 100%;
 }
