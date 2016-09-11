@@ -3,7 +3,10 @@ const gulpLoadPlugins = require('gulp-load-plugins');
 const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
-var fs = require('fs');
+const fs = require('fs');
+const path = require('path');
+const git = require('git-rev')
+const map = require('map-stream');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -211,6 +214,42 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app'));
 });
 
+
+// Other actions that do not require a Vinyl
+gulp.task('gitbranch', function(){
+  $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
+    console.log("blhahhh: " + stdout);
+    if (err) throw err;
+
+  });
+});
+
+
+var gitbranch = function() {
+  return map(function(file, cb) {
+    console.log("blah");
+    $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
+      console.log("branch: " + stdout);
+      if (err) throw err;
+      return cb(null, file) ;
+    });
+
+  });
+};
+
+gulp.task('zip:dist', () => {
+
+
+    return gulp.src(['dist/**/*'])
+
+      //.pipe($.zip(path.posix.basename(__dirname) + '.zip'))
+      .pipe(gitbranch())
+      //.pipe(git.branch())
+      .pipe($.print()
+
+      );
+});
+//.pipe(gulp.dest('dist-artifact')
 gulp.task('build', ['lint', 'html', 'revimages', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
