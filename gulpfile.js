@@ -4,12 +4,12 @@ const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
 const fs = require('fs');
-const path = require('path');
 const git = require('git-rev')
-const map = require('map-stream');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
+
+const artifactFolder = "dist-artifact";
 
 gulp.task('styles', () => {
   return gulp.src('app/styles/*.css')
@@ -150,7 +150,9 @@ gulp.task('extras', () => {
   }).pipe(gulp.dest('dist'));
 });
 
-gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+gulp.task('clean', del.bind(null, ['.tmp', 'dist', artifactFolder]));
+
+gulp.task('clean:artifacts', del.bind(null, [artifactFolder]));
 
 gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
   browserSync({
@@ -214,39 +216,25 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app'));
 });
 
+gulp.task('zip:dist', ['clean:artifacts'], (cb) => {
+    $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
+          if (err) {
+            return cb(err);
+          }
 
-// Other actions that do not require a Vinyl
-gulp.task('gitbranch', function(){
-  $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
-    console.log("blhahhh: " + stdout);
-    if (err) throw err;
-
-  });
+          var stream = gulp.src(['dist/**/*'])
+            .pipe($.zip(stdout.trim() + '.zip'))
+            .pipe(gulp.dest(artifactFolder))
+            .pipe($.print(function(filepath) {
+                    return "Artifact has been successfully created: " + (__dirname + '/' + filepath);
+                  })
+            )
+            .pipe($.size({title: 'Compressed'}))
+            .on('end', cb);
+    });
 });
 
 
-// var gitbranch = function() {
-//   return map(function(file, cb) {
-//     console.log("blah");
-//     $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
-//       console.log("branch: " + stdout);
-//       if (err) throw err;
-//       return cb(null, file) ;
-//     });
-//
-//   });
-// };
-
-gulp.task('zip:dist', () => {
-
-    return gulp.src(['dist/**/*'])
-      .pipe($.zip(path.posix.basename(__dirname) + '.zip'))
-      //.pipe(gitbranch())
-    //  .pipe($.print())
-      .pipe(gulp.dest('dist-artifact')
-      );
-});
-//.pipe(gulp.dest('dist-artifact')
 gulp.task('build', ['lint', 'html', 'revimages', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
