@@ -225,28 +225,25 @@ gulp.task('gitbranch', function(){
 });
 
 
-var gitbranch = function() {
-  return map(function(file, cb) {
-    console.log("blah");
-    $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
-      console.log("branch: " + stdout);
-      if (err) throw err;
-      return cb(null, file) ;
-    });
-
-  });
-};
+// var gitbranch = function() {
+//   return map(function(file, cb) {
+//     console.log("blah");
+//     $.git.exec({args : 'rev-parse --abbrev-ref HEAD'}, function (err, stdout) {
+//       console.log("branch: " + stdout);
+//       if (err) throw err;
+//       return cb(null, file) ;
+//     });
+//
+//   });
+// };
 
 gulp.task('zip:dist', () => {
 
-
     return gulp.src(['dist/**/*'])
-
-      //.pipe($.zip(path.posix.basename(__dirname) + '.zip'))
-      .pipe(gitbranch())
-      //.pipe(git.branch())
-      .pipe($.print()
-
+      .pipe($.zip(path.posix.basename(__dirname) + '.zip'))
+      //.pipe(gitbranch())
+    //  .pipe($.print())
+      .pipe(gulp.dest('dist-artifact')
       );
 });
 //.pipe(gulp.dest('dist-artifact')
