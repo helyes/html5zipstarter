@@ -1,3 +1,5 @@
+/// <reference path="../../typings/tsd.d.ts" />
+
 'use strict';
 
 var exampleFunction = function () {
@@ -7,3 +9,6 @@ var exampleFunction = function () {
 exampleFunction();
 
 $('#credits').addClass('animated bounceInDown');
+
+
+
