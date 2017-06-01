@@ -1,5 +1,7 @@
 /// <reference path="../../typings/tsd.d.ts" />
 
+'use strict';
+
 const gulp = require('gulp');
 const gulpLoadPlugins = require('gulp-load-plugins');
 const browserSync = require('browser-sync');
@@ -11,7 +13,7 @@ const git = require('git-rev');
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
-const artifactFolder = "dist-artifact";
+const artifactFolder = 'dist-artifact';
 
 
 
@@ -69,7 +71,6 @@ gulp.task('html', ['styles', 'scripts'], () => {
     .pipe($.revReplace())
     .pipe(gulp.dest('dist'))
     .pipe($.size({title: 'Processed html,'}));
-    ;
 });
 
 
@@ -95,7 +96,7 @@ var extendManifest = function (manifest) {
   fs.writeFileSync(extendedManifestFile, JSON.stringify(manifestExtended, undefined, 2));
   console.log('File ' + extendedManifestFile + ' has been successfully created');
   return extendedManifestFile;
-}
+};
 
 
 gulp.task('images', () => {
@@ -116,7 +117,6 @@ gulp.task('images', () => {
     .pipe(gulp.dest('dist/images'))
     .pipe($.print())
     .pipe($.size({title: 'Processed'}));
-    ;
 });
 
 gulp.task('revimages', ['html', 'images'], function () {
@@ -134,7 +134,7 @@ gulp.task('revimages', ['html', 'images'], function () {
       //.pipe($.print())
       .pipe($.fingerprint(manifest, options))
       .pipe($.if('*.css',  gulp.dest('dist/styles')))
-      .pipe($.if('*.html', gulp.dest('dist')))
+      .pipe($.if('*.html', gulp.dest('dist')));
 });
 
 
@@ -230,7 +230,7 @@ gulp.task('zip:dist', ['clean:artifacts'], (cb) => {
             .pipe($.zip(stdout.trim() + '.zip'))
             .pipe(gulp.dest(artifactFolder))
             .pipe($.print(function(filepath) {
-                    return "Artifact has been successfully created: " + (__dirname + '/' + filepath);
+                    return 'Artifact has been successfully created: ' + (__dirname + '/' + filepath);
                   })
             )
             .pipe($.size({title: 'Compressed'}))
